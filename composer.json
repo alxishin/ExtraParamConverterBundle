@@ -1,0 +1,29 @@
+{
+    "name": "bu/extra-param-converter-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 bundle that extends Sensio ParamConverter functionality, allowing to convert simple GET and complex POST data",
+    "keywords": ["annotation", "param-converter", "doctrine", "bundle"],
+    "homepage": "http://github.com/Fludimir/ExtraParamConverterBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fludimir",
+            "email": "Fludimir@gmail.com"
+        },
+        {
+            "name": "Irina Naydyonova",
+            "email": "ajrina.mail@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "symfony/framework-bundle": ">=2.1,<2.3-dev",
+        "sensio/framework-extra-bundle": "2.2.*",
+        "doctrine/orm": "~2.2,>=2.2.3"
+    },
+    "autoload": {
+        "psr-0": { "Bu\\ExtraParamConverterBundle": "" }
+    },
+    "minimum-stability": "dev",
+    "target-dir": "Bu/ExtraParamConverterBundle"
+}
