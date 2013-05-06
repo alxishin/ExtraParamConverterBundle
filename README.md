@@ -8,9 +8,9 @@ Requires [SensioFrameworkExtraBundle](http://symfony.com/doc/current/bundles/Sen
 
 Installation
 -------------
-Add `"bu/extra-param-converter-bundle": "dev-master"` to your composer.json.
+Add bundle with composer: 
 
-Run `composer install`
+`composer require bu/extra-param-converter-bundle dev-master`
 
 Register bundle in AppKernel.php:
 ``` php
