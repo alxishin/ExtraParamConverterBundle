@@ -106,13 +106,14 @@ class PostConverter implements ParamConverterInterface
 
     /**
      * Returns entity or array of entities, depending on param type
+     * Required to be public for call from closure in php 5.3
      *
      * @param string        $class  Entity class name for searching
      * @param integer|array $idData entity id or array of ids
      *
      * @return object|array entity or array of entities
     */
-    protected function _findEntities($class, $idData)
+    public function _findEntities($class, $idData)
     {
         if (is_array($idData)) {
             $result = array();
