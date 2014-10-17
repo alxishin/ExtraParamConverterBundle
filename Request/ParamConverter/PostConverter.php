@@ -38,7 +38,7 @@ class PostConverter implements ParamConverterInterface
 
         if ($configuration->isStripTags()) {
             //recursive walk on array to update all leaf values (all that are not arrays)
-            $walkFunc = function(&$param) {
+            $walkFunc = function (&$param) {
                 if (is_string($param)) {
                     $param = strip_tags($param);
                 }
@@ -54,13 +54,13 @@ class PostConverter implements ParamConverterInterface
             $foundEntities = array();
             $converter = $this;
 
-            $walkFunc = function(&$param, $key) use ($entities, &$foundEntities, $namespace, $converter, &$walkFunc) {
+            $walkFunc = function (&$param, $key) use ($entities, &$foundEntities, $namespace, $converter, &$walkFunc) {
                 // If key exists - we have defined class for this key and should find entity/entities
                 // if not - entities data may be at deeper levels - checking by recursive search
                 // Warning! $key should not be any integer value (ie array indexes)
                 if (array_key_exists($key, $entities)) {
                     $class = "{$namespace}:{$entities[$key]}";
-                    $param = $converter->_findEntities($class, $param);
+                    $param = $converter->findEntities($class, $param);
                     // counting found data to check that all that we defined in annotation is in request data
                     $foundEntities[] = $entities[$key];
                 } elseif (is_array($param)) {
@@ -95,7 +95,7 @@ class PostConverter implements ParamConverterInterface
      *
      * @return Entity
      */
-    protected function _find($class, $id)
+    protected function find($class, $id)
     {
         if ($object = $this->_em->getRepository($class)->find($id)) {
             return $object;
@@ -113,15 +113,15 @@ class PostConverter implements ParamConverterInterface
      *
      * @return object|array entity or array of entities
     */
-    public function _findEntities($class, $idData)
+    public function findEntities($class, $idData)
     {
         if (is_array($idData)) {
             $result = array();
             foreach ($idData as $id) {
-                $result[] = $this->_find($class, $id);
+                $result[] = $this->find($class, $id);
             }
         } else {
-            $result = $this->_find($class, $idData);
+            $result = $this->find($class, $idData);
         }
 
         return $result;
