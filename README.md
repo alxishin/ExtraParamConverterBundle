@@ -1,5 +1,8 @@
 BuExtraParamConverterBundle
 =============
+
+Todo: update the read me with our additions
+
 BuExtraParamConverterBundle extends [Sensio ParamConverter](http://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/annotations/converters.html) functionality, allowing to convert simple GET and complex POST data to entities, decode json data and strip tags from data.
 
 Requires [SensioFrameworkExtraBundle](http://symfony.com/doc/current/bundles/SensioFrameworkExtraBundle/index.html).
