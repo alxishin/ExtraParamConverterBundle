@@ -8,7 +8,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
  * @ExtraParamConverter annotation.
  *
  * Example:
- * @ExtraParamConverter("data", jsonData=true, stripTags=true, namespace="MySuperBundle", entities={"user"="User","groups"="Group"})
+ * @ExtraParamConverter("data", jsonData=true, stripTags=true, isOptional=false, namespace="MySuperBundle", entities={
+ * "user"= { class="User", name="receivingUser" }
+ * })
  *
  * @author Lebedinsky Vladimir <Fludimir@gmail.com>
  * @author Irina Naydyonova <ajrina.mail@gmail.com>
@@ -65,6 +67,20 @@ class ExtraParamConverter extends ConfigurationAnnotation
      * @var string
      */
     protected $converter;
+
+    /**
+     * Whether or not the parameter is optional.
+     *
+     * @var Boolean
+     */
+    protected $optional = false;
+
+    /**
+     * An array of options.
+     *
+     * @var array
+     */
+    protected $options = array();
 
     /**
      * Returns the parameter name.
@@ -189,8 +205,10 @@ class ExtraParamConverter extends ConfigurationAnnotation
 
     /**
      * Required because of improper interface usage in ParamConverterManager
-    */
-    public function getClass() {}
+     */
+    public function getClass()
+    {
+    }
 
     /**
      * Multiple ParamConverters are not allowed.
@@ -221,5 +239,45 @@ class ExtraParamConverter extends ConfigurationAnnotation
     public function setConverter($converter)
     {
         $this->converter = $converter;
+    }
+
+    /**
+     * Sets whether or not the parameter is optional.
+     *
+     * @param Boolean $optional Wether the parameter is optional
+     */
+    public function setIsOptional($optional)
+    {
+        $this->optional = (Boolean)$optional;
+    }
+
+    /**
+     * Returns whether or not the parameter is optional.
+     *
+     * @return Boolean
+     */
+    public function isOptional()
+    {
+        return $this->optional;
+    }
+
+    /**
+     * Returns an array of options.
+     *
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    /**
+     * Sets an array of options.
+     *
+     * @param array $options An array of options
+     */
+    public function setOptions($options)
+    {
+        $this->options = $options;
     }
 }

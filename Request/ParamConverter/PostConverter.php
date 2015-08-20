@@ -2,6 +2,7 @@
 
 namespace Bu\ExtraParamConverterBundle\Request\ParamConverter;
 
+use Bu\ExtraParamConverterBundle\Tests\Fixtures\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
@@ -19,6 +20,8 @@ use Bu\ExtraParamConverterBundle\Configuration\ExtraParamConverter;
 class PostConverter implements ParamConverterInterface
 {
     protected $_em;
+    protected $namespace;
+    protected $entities;
 
     public function __construct(EntityManager $em)
     {
@@ -30,7 +33,10 @@ class PostConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ConfigurationInterface $configuration)
     {
-        $data = $configuration->isJsonData() ? json_decode($request->getContent(), true) : $request->request->all();
+        $requestData = $request->attributes->has('paramFetcher') ? $request->attributes->get('paramFetcher')->all() : $request->request->all();
+
+        $data = $configuration->isJsonData() ? json_decode($request->getContent(), true) : array_filter($requestData);
+        $options = $configuration->getOptions();
 
         if (!is_array($data)) {
             throw new Exception\ContentDataDoesNotValidException;
@@ -46,21 +52,20 @@ class PostConverter implements ParamConverterInterface
             array_walk_recursive($data, $walkFunc);
         }
 
-        if ($entities = $configuration->getEntities()) {
-            if (!($namespace = $configuration->getNamespace())) {
+        if ($entities = $this->entities = $configuration->getEntities()) {
+            if (!($this->namespace = $configuration->getNamespace())) {
                 throw new Exception\NamespaceDoesNotSetInAnnotationException;
             }
 
             $foundEntities = array();
             $converter = $this;
 
-            $walkFunc = function (&$param, $key) use ($entities, &$foundEntities, $namespace, $converter, &$walkFunc) {
+            $walkFunc = function (&$param, $key) use ($entities, &$foundEntities, $converter, $options, &$walkFunc) {
                 // If key exists - we have defined class for this key and should find entity/entities
                 // if not - entities data may be at deeper levels - checking by recursive search
                 // Warning! $key should not be any integer value (ie array indexes)
                 if (array_key_exists($key, $entities)) {
-                    $class = "{$namespace}:{$entities[$key]}";
-                    $param = $converter->findEntities($class, $param);
+                    $param = $converter->findEntities($entities[$key], $param);
                     // counting found data to check that all that we defined in annotation is in request data
                     $foundEntities[] = $entities[$key];
                 } elseif (is_array($param)) {
@@ -69,14 +74,27 @@ class PostConverter implements ParamConverterInterface
             };
             array_walk($data, $walkFunc);
 
-            if ($diff = array_diff($entities, array_unique($foundEntities))) {
+            if ($configuration->isOptional() === false && $diff = array_diff($entities, array_unique($foundEntities))) {
                 $vars = implode(',', array_keys($diff));
                 $message = "Variable `$vars` was defined in annotation but not found in request";
                 throw new Exception\NotPostedValuesSettedInAnnotationException($message);
             }
+
+            // Here we are going to change the name of the keys of array items
+            foreach($options as $field => $value ) {
+                if(isset($data[$field])) {
+                    // Create the new array element
+                    $data[$value] = $data[$field];
+                    // Remove the old one
+                    unset($data[$field]);
+                }
+            }
+
         }
 
         $request->attributes->set($configuration->getName(), $data);
+
+        return true;
     }
 
     /**
@@ -90,17 +108,21 @@ class PostConverter implements ParamConverterInterface
     /**
      * Getting an entity by id from repository.
      *
-     * @param string  $class Entity class name for searching
-     * @param integer $id    Entity id for searching
+     * @param string  $entity Entity for searching
+     * @param integer $searchValue    Entity id for searching
      *
      * @return Entity
      */
-    protected function find($class, $id)
+    protected function find($entity, $searchValue)
     {
-        if ($object = $this->_em->getRepository($class)->find($id)) {
+        $class = "{$this->namespace}:{$entity['class']}";
+
+        $field = isset($entity['name']) ? $entity['name'] : 'id';
+
+        if($object = $this->_em->getRepository($class)->findOneBy(array($field => $searchValue))) {
             return $object;
         } else {
-            throw new NotFoundHttpException("Can't find $class entity with id `$id`.");
+            throw new NotFoundHttpException("Can't find $class entity with id `$searchValue`.");
         }
     }
 
@@ -108,20 +130,20 @@ class PostConverter implements ParamConverterInterface
      * Returns entity or array of entities, depending on param type
      * Required to be public for call from closure in php 5.3
      *
-     * @param string        $class  Entity class name for searching
+     * @param string        $entity  Entity for searching
      * @param integer|array $idData entity id or array of ids
      *
      * @return object|array entity or array of entities
-    */
-    public function findEntities($class, $idData)
+     */
+    public function findEntities($entity, $idData)
     {
         if (is_array($idData)) {
             $result = array();
             foreach ($idData as $id) {
-                $result[] = $this->find($class, $id);
+                $result[] = $this->find($entity, $id);
             }
         } else {
-            $result = $this->find($class, $idData);
+            $result = $this->find($entity, $idData);
         }
 
         return $result;

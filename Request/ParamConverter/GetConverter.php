@@ -17,11 +17,11 @@ use Doctrine\ORM\EntityManager;
  */
 class GetConverter implements ParamConverterInterface
 {
-    protected $_em;
+    protected $em;
 
     public function __construct(EntityManager $em)
     {
-        $this->_em = $em;
+        $this->em = $em;
     }
 
     /**
@@ -29,14 +29,31 @@ class GetConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ConfigurationInterface $configuration)
     {
-        $id = $request->query->get($configuration->getName());
+        $name = $configuration->getName();
         $class = $configuration->getClass();
 
-        if ($entity = $this->_em->getRepository($class)->find($id)) {
-            $request->attributes->set($configuration->getName(), $entity);
-        } else {
-            throw new NotFoundHttpException("Can't find $class entity with id `$id`.");
+        // If a request attribute for this name is available, we use that one
+        if(true === $request->attributes->has($name))
+            return false;
+
+        if (null === $id = $request->query->get($name)) {
+            $configuration->setIsOptional(true);
         }
+
+        $object = null;
+
+        // find by identifier?
+        if ($id !== null && false === $object = $this->em->getRepository($class)->find($id)) {
+            $object = null;
+        }
+
+        if (null === $object && false === $configuration->isOptional()) {
+            throw new NotFoundHttpException(sprintf('%s object not found.', $class));
+        }
+
+        $request->attributes->set($name, $object);
+
+        return true;
     }
 
     /**
