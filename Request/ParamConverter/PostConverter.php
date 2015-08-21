@@ -3,8 +3,7 @@
 namespace Bu\ExtraParamConverterBundle\Request\ParamConverter;
 
 use Bu\ExtraParamConverterBundle\Tests\Fixtures\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -31,7 +30,7 @@ class PostConverter implements ParamConverterInterface
     /**
      * {@inheritDoc}
      */
-    public function apply(Request $request, ConfigurationInterface $configuration)
+    public function apply(Request $request, ParamConverter $configuration)
     {
         $requestData = $request->attributes->has('paramFetcher') ? $request->attributes->get('paramFetcher')->all() : $request->request->all();
 
@@ -100,7 +99,7 @@ class PostConverter implements ParamConverterInterface
     /**
      * {@inheritDoc}
      */
-    public function supports(ConfigurationInterface $configuration)
+    public function supports(ParamConverter $configuration)
     {
         return ($configuration instanceof ExtraParamConverter);
     }

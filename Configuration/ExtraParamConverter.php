@@ -2,7 +2,7 @@
 
 namespace Bu\ExtraParamConverterBundle\Configuration;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 /**
  * @ExtraParamConverter annotation.
@@ -17,7 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ConfigurationAnnotation;
  *
  * @Annotation
  */
-class ExtraParamConverter extends ConfigurationAnnotation
+class ExtraParamConverter extends ParamConverter
 {
     /**
      * The parameter name.

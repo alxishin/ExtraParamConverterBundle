@@ -27,7 +27,7 @@ class GetConverter implements ParamConverterInterface
     /**
      * {@inheritDoc}
      */
-    public function apply(Request $request, ConfigurationInterface $configuration)
+    public function apply(Request $request, ParamConverter $configuration)
     {
         $name = $configuration->getName();
         $class = $configuration->getClass();
@@ -59,7 +59,7 @@ class GetConverter implements ParamConverterInterface
     /**
      * {@inheritDoc}
      */
-    public function supports(ConfigurationInterface $configuration)
+    public function supports(ParamConverter $configuration)
     {
         return ($configuration instanceof ParamConverter);
     }
