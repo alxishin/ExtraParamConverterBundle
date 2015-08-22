@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\ORM\EntityManager;
 use Bu\ExtraParamConverterBundle\Configuration\ExtraParamConverter;
+use FOS\RestBundle\Request\ParamFetcher;
 
 /**
  * Converter class. Contains all logic for working with ExtraParamConverter.
@@ -32,7 +33,7 @@ class PostConverter implements ParamConverterInterface
      */
     public function apply(Request $request, ParamConverter $configuration)
     {
-        $requestData = $request->attributes->has('paramFetcher') ? $request->attributes->get('paramFetcher')->all() : $request->request->all();
+        $requestData = $request->attributes->has('paramFetcher') instanceof ParamFetcher ? $request->attributes->get('paramFetcher')->all() : $request->request->all();
 
         $data = $configuration->isJsonData() ? json_decode($request->getContent(), true) : array_filter($requestData);
         $options = $configuration->getOptions();
