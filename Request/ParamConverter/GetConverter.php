@@ -33,7 +33,7 @@ class GetConverter implements ParamConverterInterface
         $class = $configuration->getClass();
 
         // If a request attribute for this name is available, we use that one
-        if(true === $request->attributes->has($name))
+        if(true === $request->attributes->has($name) || true === $request->request->has($name) )
             return false;
 
         if (null === $id = $request->query->get($name)) {
@@ -52,8 +52,6 @@ class GetConverter implements ParamConverterInterface
         }
 
         $request->attributes->set($name, $object);
-
-        return true;
     }
 
     /**
