@@ -50,7 +50,7 @@ where 123 is user id. It will throw NotFoundHttpException if can't find User by 
 use Bu\ExtraParamConverterBundle\Configuration\ExtraParamConverter;
 
     /**
-     * @ExtraParamConverter("data", jsonData=true, stripTags=true, namespace="App", entities={"groups"="Group", "role"="Role"})
+     * @ExtraParamConverter("data", jsonData=true, stripTags=true, namespace="App", entities={"groups"={"class"="Group"}, "role"={"class"="Role"}})
      */
     public function saveUserAction(array $data)
     {
