@@ -67,17 +67,22 @@ class PostConverter implements ParamConverterInterface
                 if (array_key_exists($key, $entities)) {
                     $param = $converter->findEntities($entities[$key], $param);
                     // counting found data to check that all that we defined in annotation is in request data
-                    $foundEntities[] = $entities[$key];
+                    $foundEntities[$key][] = $entities[$key];
                 } elseif (is_array($param)) {
                     return array_walk($param, $walkFunc);
                 }
             };
             array_walk($data, $walkFunc);
-
-            if ($configuration->isOptional() === false && $diff = array_diff($entities, array_unique($foundEntities))) {
-                $vars = implode(',', array_keys($diff));
-                $message = "Variable `$vars` was defined in annotation but not found in request";
-                throw new Exception\NotPostedValuesSettedInAnnotationException($message);
+            
+            if ($configuration->isOptional() === false) {
+                foreach ($entities as $key => $entity)
+                {
+                    if(!array_key_exists($key, $foundEntities))
+                    {
+                        $message = "Variable `$key` was defined in annotation but not found in request";
+                        throw new Exception\NotPostedValuesSettedInAnnotationException($message);
+                    }
+                }
             }
 
             // Here we are going to change the name of the keys of array items
