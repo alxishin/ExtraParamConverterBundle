@@ -1,5 +1,5 @@
 {
-    "name": "slavenin/extra-param-converter-bundle",
+    "name": "alxishin/extra-param-converter-bundle",
     "type": "symfony-bundle",
     "description": "Symfony2 bundle that extends Sensio ParamConverter functionality, allowing to convert simple GET and complex POST data",
     "keywords": ["annotation", "param-converter", "doctrine", "bundle"],
