@@ -4,13 +4,13 @@ parameters:
 
 services:
     bu.paramconverter.post:
-        class: %bu.paramconverter.post.class%
-        arguments: [@doctrine.orm.entity_manager]
+        class: '%bu.paramconverter.post.class%'
+        arguments: ['@doctrine.orm.entity_manager']
         tags:
             - { name: request.param_converter }
 
     bu.paramconverter.get:
-        class: %bu.paramconverter.get.class%
-        arguments: [@doctrine.orm.entity_manager]
+        class: '%bu.paramconverter.get.class%'
+        arguments: ['@doctrine.orm.entity_manager']
         tags:
             - { name: request.param_converter, priority: 5 }
